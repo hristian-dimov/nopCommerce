@@ -90,6 +90,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Caching\IRedisConnectionWrapper.cs" />
+    <Compile Include="Caching\RedisConnectionWrapper.cs" />
     <Compile Include="Caching\RedisCacheManager.cs" />
     <Compile Include="ComponentModel\WriteLockDisposable.cs" />
     <Compile Include="Domain\Catalog\Events.cs" />
