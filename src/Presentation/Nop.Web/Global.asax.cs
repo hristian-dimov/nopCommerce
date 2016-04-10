@@ -129,7 +129,7 @@ namespace Nop.Web
             //miniprofiler
             if (EngineContext.Current.Resolve<StoreInformationSettings>().DisplayMiniProfilerInPublicStore)
             {
-                MiniProfiler.Start();
+                MiniProfiler.Start(ProfileLevel.Verbose);
                 //store a value indicating whether profiler was started
                 HttpContext.Current.Items["nop.MiniProfilerStarted"] = true;
             }
