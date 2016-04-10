@@ -7,6 +7,8 @@ using Nop.Core.Domain.Common;
 using Nop.Core.Domain.Customers;
 using Nop.Core.Domain.Logging;
 using Nop.Data;
+using Nop.Core.Infrastructure;
+using Nop.Services.Infrastructure;
 
 namespace Nop.Services.Logging
 {
@@ -208,6 +210,8 @@ namespace Nop.Services.Logging
             //check ignore word/phrase list?
             if (IgnoreLog(shortMessage) || IgnoreLog(fullMessage))
                 return null;
+
+            shortMessage = EngineContext.Current.Resolve<IMachineNameProvider>().GetMachineName() + ":" + shortMessage;
 
             var log = new Log
             {
