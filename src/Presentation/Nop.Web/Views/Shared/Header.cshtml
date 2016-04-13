@@ -2,6 +2,7 @@
 @using Nop.Core.Infrastructure
 @using Nop.Services.Localization
 @using Nop.Web.Framework.Themes
+@using Nop.Services.Infrastructure;
 @{
     //logo path
     var currentThemeName = EngineContext.Current.Resolve<IThemeContext>().WorkingThemeName;
@@ -9,18 +10,22 @@
 
     //store name
     var storeName = EngineContext.Current.Resolve<IStoreContext>().CurrentStore.GetLocalized(x => x.Name);
+
+    var machineName = EngineContext.Current.Resolve<IMachineNameProvider>().GetMachineName();
 }
 <div class="header">
     @Html.Widget("header")
     <div class="header-upper">
         <div class="header-selectors-wrapper">
-            
+
+            <div>Machine: @machineName</div> 
+
             @Html.Action("TaxTypeSelector", "Common")
-            
+
             @Html.Action("CurrencySelector", "Common")
-            
+
             @Html.Action("LanguageSelector", "Common")
-            
+
             @Html.Widget("header_selectors")
         </div>
         <div class="header-links-wrapper">
