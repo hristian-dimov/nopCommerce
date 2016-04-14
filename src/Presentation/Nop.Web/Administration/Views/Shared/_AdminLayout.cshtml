@@ -4,6 +4,7 @@
 @using Nop.Core;
 @using Nop.Core.Domain.Common;
 @using Nop.Services.Security;
+@using Nop.Services.Infrastructure;
 @{
     var currentCustomer = this.WorkContext.CurrentCustomer;
     var usernamesEnabled = EngineContext.Current.Resolve<CustomerSettings>().UsernamesEnabled;
@@ -56,36 +57,38 @@
 
     var webHelper = EngineContext.Current.Resolve<IWebHelper>();
 
+    var machineName = EngineContext.Current.Resolve<IMachineNameProvider>().GetMachineName();
+
     //info: we specify "Admin" area for actions adn widgets here for cases when we use this layout in a plugin that is running in a different area than "admin"
 }
 <!DOCTYPE html>
 <html @(supportRtl ? Html.Raw("dir=\"rtl\"") : null)>
-    <head>
-        <title>@adminPageTitle</title>
-        <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
-        @Html.NopHeadCustom()
-        @Html.NopCssFiles(this.Url, ResourceLocation.Head)
-        @Html.NopScripts(this.Url, ResourceLocation.Head)
-    </head>
-    <body @(supportRtl ? Html.Raw("class=\"k-rtl\"") : null)>
-        <div id="ajaxBusy">
-            <span>&nbsp;</span>
-        </div>
-        <div class="master-wrapper-page k-content">
-            <div class="master-wrapper-content">
-                @if (IsSectionDefined("header"))
-                {
-                    @RenderSection("header")
-                }
-                else
-                {
-                    <script type="text/javascript">
+<head>
+    <title>@adminPageTitle</title>
+    <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+    @Html.NopHeadCustom()
+    @Html.NopCssFiles(this.Url, ResourceLocation.Head)
+    @Html.NopScripts(this.Url, ResourceLocation.Head)
+</head>
+<body @(supportRtl ? Html.Raw("class=\"k-rtl\"") : null)>
+    <div id="ajaxBusy">
+        <span>&nbsp;</span>
+    </div>
+    <div class="master-wrapper-page k-content">
+        <div class="master-wrapper-content">
+            @if (IsSectionDefined("header"))
+            {
+                @RenderSection("header")
+            }
+            else
+            {
+                <script type="text/javascript">
                         $(document).ready(function () {
                             $("#restart-application").click(function (e) {
                                 showThrobber('@Html.Raw(HttpUtility.JavaScriptStringEncode(T("Admin.Header.RestartApplication.Progress").Text))');
                             });
                         });
-                    </script>
+                </script>
                     <div class="header">
                         <div class="logo">
                         </div>
@@ -111,54 +114,54 @@
                                 <text>, </text> <a href="@Url.Action("Logout", "Customer", new { area = "" }, null)">@T("Admin.Header.Logout")</a>
                             }
                         </div>
-                        <div class="version">
-                            <span>nopCommerce @currentVersion</span>
+                        <div class="version" style="font-size: 20px; top: 48px;">
+                            <span>Instance ID: @machineName</span>
                         </div>
                         @Html.Widget("admin_header_after", area: "Admin")
                     </div>
-                }
-                @if (IsSectionDefined("headermenu"))
-                {
-                    @RenderSection("headermenu")
-                }
-                else
-                {
-                    <div class="header-menu">
-                        @Html.Partial("Menu")
-                    </div>
-                }
-                @if (IsSectionDefined("statusbar"))
-                {
-                    @RenderSection("statusbar")
-                }
-                else
-                {
-                    <div class="status-bar">
-                        @(EngineContext.Current.Resolve<Nop.Services.Helpers.IDateTimeHelper>().ConvertToUserTime(DateTime.Now).ToString("f"))
-                    </div>
-                }
-                <div class="content">
-                    @Html.Partial("Notifications")
-                    <div class="cph">
-                        @RenderBody()
-                    </div>
+            }
+            @if (IsSectionDefined("headermenu"))
+            {
+                @RenderSection("headermenu")
+            }
+            else
+            {
+                <div class="header-menu">
+                    @Html.Partial("Menu")
                 </div>
-                <div class="throbber">
-                    <div class="curtain">
-                    </div>
-                    <div class="curtain-content">
-                        <div>
-                            <h1 class="throbber-header">Wait...</h1>
-                            <p>
-                                <img src="@Url.Content("~/administration/content/images/throbber-synchronizing.gif")" alt="" />
-                            </p>
-                        </div>
+            }
+            @if (IsSectionDefined("statusbar"))
+            {
+                @RenderSection("statusbar")
+            }
+            else
+            {
+                <div class="status-bar">
+                    @(EngineContext.Current.Resolve<Nop.Services.Helpers.IDateTimeHelper>().ConvertToUserTime(DateTime.Now).ToString("f"))
+                </div>
+            }
+            <div class="content">
+                @Html.Partial("Notifications")
+                <div class="cph">
+                    @RenderBody()
+                </div>
+            </div>
+            <div class="throbber">
+                <div class="curtain">
+                </div>
+                <div class="curtain-content">
+                    <div>
+                        <h1 class="throbber-header">Wait...</h1>
+                        <p>
+                            <img src="@Url.Content("~/administration/content/images/throbber-synchronizing.gif")" alt="" />
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
-        @Html.NopCssFiles(this.Url, ResourceLocation.Foot)
-        @Html.NopScripts(this.Url, ResourceLocation.Foot)
-    </body>
+    </div>
+    @Html.NopCssFiles(this.Url, ResourceLocation.Foot)
+    @Html.NopScripts(this.Url, ResourceLocation.Foot)
+</body>
 </html>
 
