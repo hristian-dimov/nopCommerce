@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
+using NUnit.Framework;
 using Newtonsoft.Json;
 using Nop.Plugin.Api.DTOs.Customers;
 using Nop.Plugin.Api.Serializers;
 using Nop.Plugin.Api.Tests.SerializersTests.DummyObjects;
-using Nop.Plugin.Api.Validators;
-using NUnit.Framework;
 using Rhino.Mocks;
 
 namespace Nop.Plugin.Api.Tests.SerializersTests
@@ -13,25 +11,25 @@ namespace Nop.Plugin.Api.Tests.SerializersTests
     [TestFixture]
     public class JsonFieldsSerializerTests_Serialize
     {
-        [Test]
-        [TestCase("")]
-        [TestCase(null)]
-        public void WhenEmptyFieldsParametersPassed_ShouldNotCallTheValidator(string emptyFields)
-        {
-            ISerializableObject serializableObject = new DummySerializableObject();
+        //[Test]
+        //[TestCase("")]
+        //[TestCase(null)]
+        //public void WhenEmptyFieldsParametersPassed_ShouldNotCallTheValidator(string emptyFields)
+        //{
+        //    ISerializableObject serializableObject = new DummySerializableObject();
 
-            //Arange
-            IFieldsValidator validator = MockRepository.GenerateMock<IFieldsValidator>();
+        //    //Arange
+        //    IFieldsValidator validator = MockRepository.GenerateMock<IFieldsValidator>();
 
 
-            IJsonFieldsSerializer cut = new JsonFieldsSerializer(validator);
+        //    IJsonFieldsSerializer cut = new JsonFieldsSerializer(validator);
 
-            //Act
-            cut.Serialize(serializableObject, emptyFields);
+        //    //Act
+        //    cut.Serialize(serializableObject, emptyFields);
 
-            //Assert
-            validator.AssertWasNotCalled(x => x.GetValidFields(null, null), y => y.IgnoreArguments());
-        }
+        //    //Assert
+        //    validator.AssertWasNotCalled(x => x.GetValidFields(null, null), y => y.IgnoreArguments());
+        //}
 
         [Test]
         [TestCase("")]
@@ -39,9 +37,7 @@ namespace Nop.Plugin.Api.Tests.SerializersTests
         public void WhenEmptyFieldsParameterPassed_ShouldSerializeEverythingFromThePassedObject(string emptyFieldsParameter)
         {
             //Arange
-            IFieldsValidator validator = MockRepository.GenerateStub<FieldsValidator>();
-
-            IJsonFieldsSerializer cut = new JsonFieldsSerializer(validator);
+            IJsonFieldsSerializer cut = new JsonFieldsSerializer();
 
             var serializableObject = new DummySerializableObject();
             serializableObject.Items.Add(new DummyObject()
@@ -52,7 +48,6 @@ namespace Nop.Plugin.Api.Tests.SerializersTests
 
             //Act
             string serializedObjectJson = cut.Serialize(serializableObject, emptyFieldsParameter);
-
 
             //Assert 
             DummySerializableObject dummySerializableObjectFromJson =
@@ -69,9 +64,7 @@ namespace Nop.Plugin.Api.Tests.SerializersTests
         public void WhenNullObjectToSerializePassed_ShouldThrowArgumentNullException()
         {
             //Arange
-            IFieldsValidator validator = MockRepository.GenerateStub<FieldsValidator>();
-
-            IJsonFieldsSerializer cut = new JsonFieldsSerializer(validator);
+            IJsonFieldsSerializer cut = new JsonFieldsSerializer();
 
             //Act
             cut.Serialize(Arg<ISerializableObject>.Is.Null, Arg<string>.Is.Anything);
@@ -112,13 +105,7 @@ namespace Nop.Plugin.Api.Tests.SerializersTests
 
 
             // Arange
-            IFieldsValidator validator = MockRepository.GenerateStub<IFieldsValidator>();
-            validator.Stub(
-                x =>
-                    x.GetValidFields(Arg<string>.Is.Anything, Arg<Type>.Is.Anything))
-                        .Return(new Dictionary<string, bool>());
-
-            IJsonFieldsSerializer cut = new JsonFieldsSerializer(validator);
+            IJsonFieldsSerializer cut = new JsonFieldsSerializer();
 
             // Act
             string json = cut.Serialize(dummySerializableObject, "not valid fields");
@@ -142,17 +129,8 @@ namespace Nop.Plugin.Api.Tests.SerializersTests
                 SecondProperty = "second property value",
             });
 
-            var validatorDictionary = new Dictionary<string, bool>();
-            validatorDictionary.Add("first_property", true);
-
             // Arange
-            IFieldsValidator validator = MockRepository.GenerateStub<IFieldsValidator>();
-            validator.Stub(
-                x =>
-                    x.GetValidFields(Arg<string>.Is.Anything, Arg<Type>.Is.Anything))
-                        .Return(validatorDictionary);
-
-            IJsonFieldsSerializer cut = new JsonFieldsSerializer(validator);
+            IJsonFieldsSerializer cut = new JsonFieldsSerializer();
 
             // Act
             string json = cut.Serialize(dummySerializableObject, "first_property");
@@ -175,17 +153,7 @@ namespace Nop.Plugin.Api.Tests.SerializersTests
                 SecondProperty = "second property value",
             });
 
-            var validatorDictionary = new Dictionary<string, bool>();
-            validatorDictionary.Add("first_property", true);
-
-            // Arange
-            IFieldsValidator validator = MockRepository.GenerateStub<IFieldsValidator>();
-            validator.Stub(
-                x =>
-                    x.GetValidFields(Arg<string>.Is.Anything, Arg<Type>.Is.Anything))
-                        .Return(validatorDictionary);
-
-            IJsonFieldsSerializer cut = new JsonFieldsSerializer(validator);
+            IJsonFieldsSerializer cut = new JsonFieldsSerializer();
 
             // Act
             string json = cut.Serialize(dummySerializableObject, "first_property");
