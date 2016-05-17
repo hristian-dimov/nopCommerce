@@ -5,7 +5,7 @@ namespace Nop.Plugin.Api.Helpers
 {
     public static class JTokenHelper
     {
-        public static JToken RemoveEmptyChildren(this JToken token, Dictionary<string, bool> fields)
+        public static JToken RemoveEmptyChildrenAndFilterByFields(this JToken token, IList<string> fields)
         {
             if (token.Type == JTokenType.Object)
             {
@@ -17,10 +17,10 @@ namespace Nop.Plugin.Api.Helpers
 
                     if (child.HasValues)
                     {
-                        child = child.RemoveEmptyChildren(fields);
+                        child = child.RemoveEmptyChildrenAndFilterByFields(fields);
                     }
 
-                    bool shouldAdd = fields.ContainsKey(prop.Name.ToLowerInvariant());
+                    bool shouldAdd = fields.Contains(prop.Name.ToLowerInvariant());
 
                     /*
                         if(level == 2 || shouldAdd)
@@ -46,7 +46,7 @@ namespace Nop.Plugin.Api.Helpers
 
                     if (child.HasValues)
                     {
-                        child = child.RemoveEmptyChildren(fields);
+                        child = child.RemoveEmptyChildrenAndFilterByFields(fields);
                     }
 
                     if (!child.IsEmptyOrDefault())

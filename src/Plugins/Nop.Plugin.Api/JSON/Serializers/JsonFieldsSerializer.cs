@@ -27,26 +27,24 @@ namespace Nop.Plugin.Api.Serializers
                 throw new ArgumentNullException("objectToSerialize");
             }
 
-            Dictionary<string, bool> fieldsDictionary = null;
+            IList<string> fieldsList = null;
 
             if (!string.IsNullOrEmpty(fields))
             {
-                IList<string> fieldsList = GetPropertiesIntoList(fields);
-
-                //TODO: Remove the dictionary as we can simply use a List
-                fieldsDictionary = fieldsList.ToDictionary(x => x, y => true);
-
                 string primaryPropertyName = objectToSerialize.GetPrimaryPropertyName();
 
-                fieldsDictionary.Add(primaryPropertyName, true);
+                fieldsList = GetPropertiesIntoList(fields);
+
+                // Always add the root manually
+                fieldsList.Add(primaryPropertyName);
             }
 
-            string json = Serialize(objectToSerialize, fieldsDictionary);
+            string json = Serialize(objectToSerialize, fieldsList);
 
             return json;
         }
 
-        private string Serialize(object objectToSerialize, Dictionary<string, bool> fields)
+        private string Serialize(object objectToSerialize, IList<string> fields)
         {
             var serializer = new JsonSerializer
             {
@@ -57,7 +55,7 @@ namespace Nop.Plugin.Api.Serializers
 
             if (fields != null)
             {
-                jToken = jToken.RemoveEmptyChildren(fields);
+                jToken = jToken.RemoveEmptyChildrenAndFilterByFields(fields);
             }
 
             string jTokenResult = jToken.ToString();
