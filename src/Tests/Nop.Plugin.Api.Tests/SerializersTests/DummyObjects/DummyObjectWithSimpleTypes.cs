@@ -2,7 +2,7 @@
 
 namespace Nop.Plugin.Api.Tests.SerializersTests.DummyObjects
 {
-    public class DummyObject
+    public class DummyObjectWithSimpleTypes
     {
         [JsonProperty("first_property")]
         public string FirstProperty { get; set; }
@@ -12,11 +12,11 @@ namespace Nop.Plugin.Api.Tests.SerializersTests.DummyObjects
 
         public override bool Equals(object obj)
         {
-            if (obj is DummyObject)
+            if (obj is DummyObjectWithSimpleTypes)
             {
-                var that = obj as DummyObject;
+                var that = obj as DummyObjectWithSimpleTypes;
 
-                return that.FirstProperty == FirstProperty && that.SecondProperty == SecondProperty;
+                return that.FirstProperty.Equals(FirstProperty) && that.SecondProperty.Equals(SecondProperty);
             }
 
             return false;

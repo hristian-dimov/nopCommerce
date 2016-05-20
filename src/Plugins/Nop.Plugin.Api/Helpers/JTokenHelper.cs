@@ -5,7 +5,7 @@ namespace Nop.Plugin.Api.Helpers
 {
     public static class JTokenHelper
     {
-        public static JToken RemoveEmptyChildrenAndFilterByFields(this JToken token, IList<string> fields)
+        public static JToken RemoveEmptyChildrenAndFilterByFields(this JToken token, IList<string> fields, int level = 1)
         {
             if (token.Type == JTokenType.Object)
             {
@@ -17,17 +17,19 @@ namespace Nop.Plugin.Api.Helpers
 
                     if (child.HasValues)
                     {
-                        child = child.RemoveEmptyChildrenAndFilterByFields(fields);
+                        child = child.RemoveEmptyChildrenAndFilterByFields(fields, level + 1);
                     }
 
-                    bool shouldAdd = fields.Contains(prop.Name.ToLowerInvariant());
+                    // In the current json structure, the first level of properties is level 3. 
+                    // If the level is > 3 ( meaning we are not on the first level of properties ), we should not check if the current field is containing into the list with fields, 
+                    // so we need to serialize it always.
+                    bool allowedFields = fields.Contains(prop.Name.ToLowerInvariant()) || level > 3;
 
-                    /*
-                        if(level == 2 || shouldAdd)
-                            if(!child.IsEmptyOrDefault())
-                    */
+                    // If the level == 3 ( meaning we are on the first level of properties ), we should not take into account if the current field is values,
+                    // so we need to serialize it always.
+                    bool notEmpty = !child.IsEmptyOrDefault() || level == 3;
 
-                    if (!child.IsEmptyOrDefault() && shouldAdd)
+                    if (notEmpty && allowedFields)
                     {
                         copy.Add(prop.Name, child);
                     }
@@ -46,7 +48,7 @@ namespace Nop.Plugin.Api.Helpers
 
                     if (child.HasValues)
                     {
-                        child = child.RemoveEmptyChildrenAndFilterByFields(fields);
+                        child = child.RemoveEmptyChildrenAndFilterByFields(fields, level + 1);
                     }
 
                     if (!child.IsEmptyOrDefault())
@@ -63,8 +65,7 @@ namespace Nop.Plugin.Api.Helpers
 
         private static bool IsEmptyOrDefault(this JToken token)
         {
-            return (token.Type == JTokenType.Array && !token.HasValues) ||
-                    (token.Type == JTokenType.Object && !token.HasValues);
+            return (token.Type == JTokenType.Array && !token.HasValues) || (token.Type == JTokenType.Object && !token.HasValues);
         }
     }
 }
