@@ -232,5 +232,43 @@ namespace Nop.Plugin.Api.Tests.SerializersTests
             Assert.AreEqual(1, complexDummySerializableObjectFromJson.Items.Count);
             Assert.AreEqual(0, complexDummySerializableObjectFromJson.Items[0].ListOfDummyObjectWithSimpleTypes.Count);
         }
+
+
+        //TODO: Name?
+        [Test]
+        public void WhenValidFieldsParameterPassed_ShouldSerializeTheseFieldsJson_ComplexDummyObject_kur_as_parameter()
+        {
+            var complexDummySerializableObject = new SerializableDummyObjectWithComplexTypes();
+
+            complexDummySerializableObject.Items.Add(new DummyObjectWithComplexTypes
+            {
+                StringProperty = "string value",
+                DummyObjectWithSimpleTypes = new DummyObjectWithSimpleTypes
+                {
+                    FirstProperty = "first property value",
+                    SecondProperty = "second property value"
+                },
+                ListOfDummyObjectWithSimpleTypes = new List<DummyObjectWithSimpleTypes>
+                {
+                    new DummyObjectWithSimpleTypes()
+                    {
+                        FirstProperty = "first property of list value",
+                        SecondProperty = "second property of list value"
+                    }
+                }
+            });
+
+            // Arange
+            IJsonFieldsSerializer cut = new JsonFieldsSerializer();
+
+            // Act
+            string json = cut.Serialize(complexDummySerializableObject, "kur");
+
+            // Assert
+            SerializableDummyObjectWithComplexTypes complexDummySerializableObjectFromJson =
+                JsonConvert.DeserializeObject<SerializableDummyObjectWithComplexTypes>(json);
+
+            Assert.AreEqual(0, complexDummySerializableObjectFromJson.Items.Count);
+        }
     }
 }

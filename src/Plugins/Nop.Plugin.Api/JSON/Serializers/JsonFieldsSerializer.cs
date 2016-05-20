@@ -12,7 +12,7 @@ namespace Nop.Plugin.Api.Serializers
     {
         private const string DateTimeIso8601Format = "yyyy-MM-ddTHH:mm:sszzz";
 
-        public string Serialize(ISerializableObject objectToSerialize, string fields)
+        public string Serialize(ISerializableObject objectToSerialize, string jsonFields)
         {
             if (objectToSerialize == null)
             {
@@ -21,11 +21,11 @@ namespace Nop.Plugin.Api.Serializers
 
             IList<string> fieldsList = null;
 
-            if (!string.IsNullOrEmpty(fields))
+            if (!string.IsNullOrEmpty(jsonFields))
             {
                 string primaryPropertyName = objectToSerialize.GetPrimaryPropertyName();
 
-                fieldsList = GetPropertiesIntoList(fields);
+                fieldsList = GetPropertiesIntoList(jsonFields);
 
                 // Always add the root manually
                 fieldsList.Add(primaryPropertyName);
@@ -36,7 +36,7 @@ namespace Nop.Plugin.Api.Serializers
             return json;
         }
 
-        private string Serialize(object objectToSerialize, IList<string> fields)
+        private string Serialize(object objectToSerialize, IList<string> jsonFields = null)
         {
             var serializer = new JsonSerializer
             {
@@ -45,9 +45,9 @@ namespace Nop.Plugin.Api.Serializers
 
             JToken jToken = JToken.FromObject(objectToSerialize, serializer);
 
-            if (fields != null)
+            if (jsonFields != null)
             {
-                jToken = jToken.RemoveEmptyChildrenAndFilterByFields(fields);
+                jToken = jToken.RemoveEmptyChildrenAndFilterByFields(jsonFields);
             }
 
             string jTokenResult = jToken.ToString();

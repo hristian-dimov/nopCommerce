@@ -5,7 +5,7 @@ namespace Nop.Plugin.Api.Helpers
 {
     public static class JTokenHelper
     {
-        public static JToken RemoveEmptyChildrenAndFilterByFields(this JToken token, IList<string> fields, int level = 1)
+        public static JToken RemoveEmptyChildrenAndFilterByFields(this JToken token, IList<string> jsonFields, int level = 1)
         {
             if (token.Type == JTokenType.Object)
             {
@@ -17,17 +17,17 @@ namespace Nop.Plugin.Api.Helpers
 
                     if (child.HasValues)
                     {
-                        child = child.RemoveEmptyChildrenAndFilterByFields(fields, level + 1);
+                        child = child.RemoveEmptyChildrenAndFilterByFields(jsonFields, level + 1);
                     }
 
                     // In the current json structure, the first level of properties is level 3. 
                     // If the level is > 3 ( meaning we are not on the first level of properties ), we should not check if the current field is containing into the list with fields, 
                     // so we need to serialize it always.
-                    bool allowedFields = fields.Contains(prop.Name.ToLowerInvariant()) || level > 3;
+                    bool allowedFields = jsonFields.Contains(prop.Name.ToLowerInvariant()) || level > 3;
 
                     // If the level == 3 ( meaning we are on the first level of properties ), we should not take into account if the current field is values,
                     // so we need to serialize it always.
-                    bool notEmpty = !child.IsEmptyOrDefault() || level == 3;
+                    bool notEmpty = !child.IsEmptyOrDefault() || level == 1 || level == 3;
 
                     if (notEmpty && allowedFields)
                     {
@@ -48,7 +48,7 @@ namespace Nop.Plugin.Api.Helpers
 
                     if (child.HasValues)
                     {
-                        child = child.RemoveEmptyChildrenAndFilterByFields(fields, level + 1);
+                        child = child.RemoveEmptyChildrenAndFilterByFields(jsonFields, level + 1);
                     }
 
                     if (!child.IsEmptyOrDefault())
